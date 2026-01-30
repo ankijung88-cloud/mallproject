@@ -5,13 +5,15 @@ type UserType = 'personal' | 'company' | 'admin' | null;
 interface AuthState {
   isAuthenticated: boolean;
   userType: UserType;
-  login: (type: UserType) => void;
+  user: any | null; // Holding full user object
+  login: (type: UserType, userData?: any) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   userType: null,
-  login: (type) => set({ isAuthenticated: true, userType: type }),
-  logout: () => set({ isAuthenticated: false, userType: null }),
+  user: null,
+  login: (type, userData) => set({ isAuthenticated: true, userType: type, user: userData || null }),
+  logout: () => set({ isAuthenticated: false, userType: null, user: null }),
 }));

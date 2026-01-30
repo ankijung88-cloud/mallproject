@@ -1,70 +1,143 @@
-
+import { useState } from 'react';
 import { User, Building2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Welcome() {
     const navigate = useNavigate();
+    const [hoveredSide, setHoveredSide] = useState<'personal' | 'company' | null>(null);
+
+    const containerVariants = {
+        initial: { opacity: 0 },
+        animate: { opacity: 1, transition: { duration: 0.8 } },
+        exit: { opacity: 0 }
+    };
+
+    const sideVariants = {
+        rest: { flex: 1 },
+        hover: { flex: 2.5 },
+        shrink: { flex: 0.6 }
+    };
+
+    // Mobile fallback for simple stacking
+    const isMobile = window.innerWidth < 768;
 
     return (
-        <div className="min-h-screen bg-gray-900 flex flex-col md:flex-row relative overflow-hidden">
-
+        <motion.div
+            variants={containerVariants}
+            initial="initial"
+            animate="animate"
+            className="h-screen w-full flex flex-col md:flex-row bg-black overflow-hidden"
+        >
             {/* Personal Section */}
-            <div
-                className="w-full md:w-1/2 flex-1 relative group cursor-pointer overflow-hidden border-b md:border-b-0 md:border-r border-gray-800"
-                onClick={() => navigate('/login?type=personal')}
+            <motion.div
+                className="relative flex items-center justify-center overflow-hidden cursor-pointer md:h-full h-1/2 border-b md:border-b-0 md:border-r border-white/10 group"
+                variants={isMobile ? {} : sideVariants}
+                animate={isMobile ? 'rest' : (hoveredSide === 'personal' ? 'hover' : hoveredSide === 'company' ? 'shrink' : 'rest')}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                onMouseEnter={() => setHoveredSide('personal')}
+                onMouseLeave={() => setHoveredSide(null)}
+                onClick={() => navigate('/personal')}
             >
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70" />
-                <div className="absolute inset-0 bg-emerald-900/80 group-hover:bg-emerald-800/70 transition-colors duration-500" />
+                {/* Background Image */}
+                <motion.div
+                    className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=1600')] bg-cover bg-center"
+                    animate={{ scale: hoveredSide === 'personal' ? 1.05 : 1.1 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
+                </motion.div>
 
-                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white p-8">
-                    <div
-                        className="bg-emerald-500 p-4 rounded-full mb-6 shadow-lg shadow-emerald-500/30 transform transition-transform hover:scale-110"
+                {/* Content */}
+                <div className="relative z-20 flex flex-col items-center justify-center text-center p-8 w-full max-w-lg">
+                    <motion.div
+                        animate={{ y: hoveredSide === 'personal' ? -10 : 0 }}
+                        className="mb-6 p-5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300"
                     >
-                        <User size={48} className="text-white" />
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-md">Personal</h2>
-                    <p className="text-emerald-50 text-lg mb-8 text-center max-w-sm drop-shadow-sm">
-                        Discover premium lifestyle products curated just for you.
-                    </p>
-                    <div className="flex items-center space-x-2 bg-white/20 px-6 py-2 rounded-full backdrop-blur-sm border border-white/30 hover:bg-white/30 transition-all font-semibold">
-                        <span>Login as Personal</span>
-                        <ArrowRight size={20} />
-                    </div>
+                        <User size={32} />
+                    </motion.div>
+
+                    <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">PERSONAL</h2>
+
+                    <motion.p
+                        className="text-gray-300 text-lg mb-8 max-w-xs font-light"
+                        animate={{ opacity: hoveredSide === 'company' ? 0 : 1 }}
+                    >
+                        Curated lifestyle essentials for you
+                    </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: hoveredSide === 'personal' ? 1 : 0, y: hoveredSide === 'personal' ? 0 : 20 }}
+                        className="flex items-center gap-2 text-emerald-400 font-bold tracking-widest uppercase text-sm"
+                    >
+                        Enter Shop <ArrowRight size={16} />
+                    </motion.div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Company Section */}
-            <div
-                className="w-full md:w-1/2 flex-1 relative group cursor-pointer overflow-hidden"
-                onClick={() => navigate('/login?type=company')}
+            <motion.div
+                className="relative flex items-center justify-center overflow-hidden cursor-pointer md:h-full h-1/2 group"
+                variants={isMobile ? {} : sideVariants}
+                animate={isMobile ? 'rest' : (hoveredSide === 'company' ? 'hover' : hoveredSide === 'personal' ? 'shrink' : 'rest')}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                onMouseEnter={() => setHoveredSide('company')}
+                onMouseLeave={() => setHoveredSide(null)}
+                onClick={() => navigate('/company')}
             >
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-70" />
-                <div className="absolute inset-0 bg-blue-900/80 group-hover:bg-blue-800/70 transition-colors duration-500" />
+                {/* Background Image */}
+                <motion.div
+                    className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1600')] bg-cover bg-center"
+                    animate={{ scale: hoveredSide === 'company' ? 1.05 : 1.1 }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
+                </motion.div>
 
-                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white p-8">
-                    <div
-                        className="bg-blue-600 p-4 rounded-full mb-6 shadow-lg shadow-blue-600/30 transform transition-transform hover:scale-110"
+                {/* Content */}
+                <div className="relative z-20 flex flex-col items-center justify-center text-center p-8 w-full max-w-lg">
+                    <motion.div
+                        animate={{ y: hoveredSide === 'company' ? -10 : 0 }}
+                        className="mb-6 p-5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300"
                     >
-                        <Building2 size={48} className="text-white" />
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-md">Company</h2>
-                    <p className="text-blue-50 text-lg mb-8 text-center max-w-sm drop-shadow-sm">
-                        Bulk purchasing and exclusive corporate rates for your business.
-                    </p>
-                    <div className="flex items-center space-x-2 bg-white/20 px-6 py-2 rounded-full backdrop-blur-sm border border-white/30 hover:bg-white/30 transition-all font-semibold">
-                        <span>Login as Company</span>
-                        <ArrowRight size={20} />
-                    </div>
+                        <Building2 size={32} />
+                    </motion.div>
+
+                    <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">BUSINESS</h2>
+
+                    <motion.p
+                        className="text-gray-300 text-lg mb-8 max-w-xs font-light"
+                        animate={{ opacity: hoveredSide === 'personal' ? 0 : 1 }}
+                    >
+                        Procurement solutions tailored for scale
+                    </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: hoveredSide === 'company' ? 1 : 0, y: hoveredSide === 'company' ? 0 : 20 }}
+                        className="flex items-center gap-2 text-blue-400 font-bold tracking-widest uppercase text-sm"
+                    >
+                        Enter Portal <ArrowRight size={16} />
+                    </motion.div>
                 </div>
+            </motion.div>
+
+            {/* Stylized OR Badge */}
+            <motion.div
+                animate={{ scale: hoveredSide ? 0 : 1, opacity: hoveredSide ? 0 : 1 }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none hidden md:block"
+            >
+                <div className="bg-black/50 backdrop-blur-xl border border-white/10 w-16 h-16 rounded-full flex items-center justify-center">
+                    <span className="text-white/60 font-mono text-xs">OR</span>
+                </div>
+            </motion.div>
+
+            {/* Logo Overlay */}
+            <div className="absolute top-8 left-0 right-0 z-40 flex justify-center pointer-events-none">
+                <span className="text-white/30 font-bold tracking-[0.5em] text-sm md:text-base uppercase">Select Your Experience</span>
             </div>
 
-            {/* Center Divider/Logo Logic could go here */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none hidden md:block">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full">
-                    <span className="text-white font-bold text-xl">OR</span>
-                </div>
-            </div>
-
-        </div>
+        </motion.div>
     );
 }

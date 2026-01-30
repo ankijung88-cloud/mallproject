@@ -1,11 +1,15 @@
 import type { ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
+import { ProductProvider } from './context/ProductContext';
 import Welcome from './pages/Welcome';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import FindAccount from './pages/FindAccount';
 import PersonalHome from './pages/PersonalHome';
 import CompanyHome from './pages/CompanyHome';
+import ProductDetail from './pages/ProductDetail';
+import OrderHistory from './pages/OrderHistory';
 
 // Admin Imports
 import AdminLogin from './pages/AdminLogin';
@@ -17,11 +21,14 @@ import AdminOrders from './pages/AdminOrders';
 import AdminShipping from './pages/AdminShipping';
 import AdminPayments from './pages/AdminPayments';
 import AdminReturns from './pages/AdminReturns';
+import AdminProducts from './pages/AdminProducts';
+import AdminShippedOrders from './pages/AdminShippedOrders';
+import AdminInvoices from './pages/AdminInvoices';
 
 import { useAuthStore } from './store/useAuthStore';
 
 // Protected Route Component
-const ProtectedRoute = ({ children, allowedType }: { children: ReactNode, allowedType: 'personal' | 'company' | 'admin' }) => {
+const ProtectedRoute = ({ children, allowedType }: { children: ReactNode, allowedType?: 'personal' | 'company' | 'admin' }) => {
   const { isAuthenticated, userType } = useAuthStore();
 
   if (!isAuthenticated) {
@@ -30,7 +37,8 @@ const ProtectedRoute = ({ children, allowedType }: { children: ReactNode, allowe
     return <Navigate to="/" replace />;
   }
 
-  if (userType !== allowedType) {
+  // If allowedType is specified, enforce it. If not, allow any authenticated user.
+  if (allowedType && userType !== allowedType) {
     if (userType === 'admin') return <Navigate to="/admin" replace />;
     if (userType === 'company') return <Navigate to="/company" replace />;
     return <Navigate to="/personal" replace />;
@@ -42,89 +50,110 @@ const ProtectedRoute = ({ children, allowedType }: { children: ReactNode, allowe
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Welcome />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/find-account" element={<FindAccount />} />
+      <CartProvider>
+        <ProductProvider>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Welcome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/find-account" element={<FindAccount />} />
 
-        {/* Admin Public Route */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+            {/* Admin Public Route */}
+            <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/personal"
-          element={
-            <ProtectedRoute allowedType="personal">
-              <PersonalHome />
-            </ProtectedRoute>
-          }
-        />
+            {/* Protected Routes */}
+            <Route path="/personal" element={<PersonalHome />} />
+            <Route path="/company" element={<CompanyHome />} />
 
-        <Route
-          path="/company"
-          element={
-            <ProtectedRoute allowedType="company">
-              <CompanyHome />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/product/:id"
+              element={<ProductDetail />}
+            />
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminDashboard />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/members" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminMembers />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/settings" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminSettings />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/orders" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminOrders />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/shipping" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminShipping />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/payments" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminPayments />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/returns" element={
-          <ProtectedRoute allowedType="admin">
-            <AdminLayout>
-              <AdminReturns />
-            </AdminLayout>
-          </ProtectedRoute>
-        } />
+            <Route path="/order-history" element={
+              <ProtectedRoute>
+                <OrderHistory />
+              </ProtectedRoute>
+            } />
 
-        {/* Catch all redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+            {/* Admin Routes */}
+            <Route path="/admin" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminDashboard />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/products" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminProducts />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/members" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminMembers />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/settings" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminSettings />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/orders" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminOrders />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/shipped" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminShippedOrders />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/shipping" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminShipping />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/payments" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminPayments />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/returns" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminReturns />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/invoices" element={
+              <ProtectedRoute allowedType="admin">
+                <AdminLayout>
+                  <AdminInvoices />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+
+            {/* Catch all redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ProductProvider>
+      </CartProvider>
     </BrowserRouter>
   );
 }

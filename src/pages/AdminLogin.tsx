@@ -12,18 +12,33 @@ export default function AdminLogin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    // Initialize default admin if not exists
+    useState(() => {
+        const stored = localStorage.getItem('mall_admin_creds');
+        if (!stored) {
+            localStorage.setItem('mall_admin_creds', JSON.stringify({
+                id: 'admin',
+                password: 'admin123',
+                name: 'Administrator'
+            }));
+        }
+    });
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate API check (Hardcoded for demo)
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Simulate API check
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        if (username === 'admin' && password === 'admin123') {
+        const stored = localStorage.getItem('mall_admin_creds');
+        const creds = stored ? JSON.parse(stored) : { id: 'admin', password: 'admin123' };
+
+        if (username === creds.id && password === creds.password) {
             login('admin');
             navigate('/admin');
         } else {
-            alert('Invalid Admin Credentials');
+            alert('관리자 정보가 올바르지 않습니다');
         }
         setIsLoading(false);
     };
@@ -39,13 +54,13 @@ export default function AdminLogin() {
                     <div className="inline-block p-4 bg-red-600/10 rounded-full mb-4">
                         <Shield className="w-12 h-12 text-red-500" />
                     </div>
-                    <h2 className="text-3xl font-bold text-white">Admin Portal</h2>
-                    <p className="text-gray-400 mt-2">Restricted Access Only</p>
+                    <h2 className="text-3xl font-bold text-white">관리자 포털</h2>
+                    <p className="text-gray-400 mt-2">접근 제한 구역</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Admin ID</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">관리자 아이디</label>
                         <input
                             type="text"
                             required
@@ -57,7 +72,7 @@ export default function AdminLogin() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-400 mb-2">Password</label>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">비밀번호</label>
                         <div className="relative">
                             <input
                                 type="password"
@@ -79,7 +94,7 @@ export default function AdminLogin() {
                             isLoading && "opacity-70 cursor-not-allowed"
                         )}
                     >
-                        {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : "Access Dashboard"}
+                        {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : "대시보드 접속"}
                     </button>
                 </form>
             </motion.div>
