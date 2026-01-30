@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useProducts } from '../context/ProductContext';
 import { PriceDisplay } from '../components/PriceDisplay';
 import MainLayout from '../layouts/MainLayout';
-import { ShoppingBag, TrendingDown, ShieldCheck, Building2, Briefcase, Truck, CheckCircle2 } from 'lucide-react';
+import { TrendingDown, ShieldCheck, Building2, Briefcase, Truck, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuthStore } from '../store/useAuthStore';

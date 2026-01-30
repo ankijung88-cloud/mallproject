@@ -18,7 +18,7 @@ import {
     X,
     ChevronRight,
     User,
-    MessageSquare
+
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect, useRef } from 'react';

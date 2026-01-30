@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, Users, ShoppingBag, DollarSign, Clock, Download, ArrowUpRight, ArrowDownRight, MoreHorizontal, Filter, RefreshCw } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,7 +17,7 @@ export default function AdminDashboard() {
     const [timeRange, setTimeRange] = useState('Today');
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    const loadData = useCallback(() => {
+    const loadData = () => {
         setIsRefreshing(true);
         const storedMembers = localStorage.getItem('mall_members');
         const storedOrders = localStorage.getItem('mall_orders');
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
 
         // Simulating network delay for refresh effect
         setTimeout(() => setIsRefreshing(false), 800);
-    }, []);
+    };
 
     // Initial Load & Auto Refresh
     useEffect(() => {

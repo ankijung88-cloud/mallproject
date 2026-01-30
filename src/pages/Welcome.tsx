@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User, Building2, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function Welcome() {
     const navigate = useNavigate();

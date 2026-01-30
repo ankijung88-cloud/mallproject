@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Save, User, Lock, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore';
+// import { useAuthStore } from '../store/useAuthStore';
 
 export default function AdminSettings() {
     const [isLoading, setIsLoading] = useState(false);
-    const { logout } = useAuthStore();
+    // const { logout } = useAuthStore();
 
     const [formData, setFormData] = useState({
         name: '',
